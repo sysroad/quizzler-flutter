@@ -1,6 +1,6 @@
 import 'dart:collection';
-import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 
 class Quiz {
   String quiz;
@@ -32,14 +32,9 @@ class QuizBank extends ListBase<Quiz> {
   Quiz operator[](int index) => container[index];
   operator []=(int index, Quiz value) { container[index] = value; }
 
-  static QuizBank fromFile(String filename) {
-    if (FileSystemEntity.typeSync(filename) == FileSystemEntityType.notFound) {
-      return null;
-    }
-
-    String content = new File(filename).readAsStringSync();
+  static Future<QuizBank> fromFile(String filename) async {
+    String content = await rootBundle.loadString(filename);
     final List jsonData =  json.decode(content);
-
     return QuizBank(jsonData.map((item) => Quiz.fromJson(item)).toList());
   }
 }

@@ -21,17 +21,19 @@ class Quizzler extends StatelessWidget {
 }
 
 class QuizPage extends StatefulWidget {
-  final QuizBank quizzBank = QuizBank.fromFile('assets/quizz.json');
-
   @override
-  _QuizPageState createState() => _QuizPageState(quizzBank);
+  _QuizPageState createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
   QuizBank quizBank;
 
-  _QuizPageState(QuizBank quizBank) {
-    this.quizBank = quizBank;
+  void loadAssets() async {
+    quizBank = await QuizBank.fromFile('data/quiz.json');
+  }
+
+  _QuizPageState() {
+    loadAssets();
   }
 
   @override
