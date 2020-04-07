@@ -27,9 +27,20 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   QuizBank quizBank;
+  List<Icon> scoreKeeper = [];
 
   void loadAssets() async {
     quizBank = await QuizBank.fromFile('data/quiz.json');
+  }
+
+  void addScore(bool rightAnswer) {
+    setState(() {
+      if (rightAnswer) {
+        scoreKeeper.add(Icon(Icons.check, color: Colors.green));
+      } else {
+        scoreKeeper.add(Icon(Icons.close, color: Colors.red));
+      }
+    });
   }
 
   _QuizPageState() {
@@ -72,7 +83,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked true.
+                addScore(true);
               },
             ),
           ),
@@ -90,12 +101,14 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked false.
+                addScore(false);
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          children: scoreKeeper,
+        ),
       ],
     );
   }
