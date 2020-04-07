@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz.dart';
+import 'dart:core';
 
 void main() => runApp(Quizzler());
 
@@ -28,9 +29,13 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   QuizBank quizBank;
   List<Icon> scoreKeeper = [];
+  Iterator<Quiz> iter;
+  String currentQuiz;
 
   void loadAssets() async {
     quizBank = await QuizBank.fromFile('data/quiz.json');
+    iter = quizBank.iterator;
+    setNextQuiz();
   }
 
   void addScore(bool rightAnswer) {
@@ -41,6 +46,18 @@ class _QuizPageState extends State<QuizPage> {
         scoreKeeper.add(Icon(Icons.close, color: Colors.red));
       }
     });
+  }
+
+  void setNextQuiz() {
+    if (iter.moveNext()) {
+      setState(() {
+        currentQuiz = iter.current.quiz;
+      });
+    } else {
+      int totalScore = scoreKeeper.length;
+      int score = scoreKeeper.where((icon) => icon.color == Colors.green).length;
+      currentQuiz = 'Quiz ends\r\nYour score is $score/$totalScore';
+    }
   }
 
   _QuizPageState() {
@@ -59,7 +76,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                currentQuiz,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -83,7 +100,8 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                addScore(true);
+                addScore(iter.current.answer == true);
+                setNextQuiz();
               },
             ),
           ),
@@ -101,7 +119,8 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                addScore(false);
+                addScore(iter.current.answer == false);
+                setNextQuiz();
               },
             ),
           ),
